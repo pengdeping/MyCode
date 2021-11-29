@@ -1,2 +1,4 @@
-include ':app'
 rootProject.name = "MyCode"
+include ':app'
+include ':pefect-mvp-lib'
+include ':mvpdemo'

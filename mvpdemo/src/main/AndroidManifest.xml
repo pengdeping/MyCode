@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.sky.mydemo">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SkyTvBoxDemo">
+        <activity android:name="com.sky.mvpdemo.MvpActivity"></activity>
+        <activity android:name="com.sky.mydemo.FirstActivity" />
+        <activity android:name="com.sky.mydemo.SecondActivity" />
+        <activity
+            android:name="com.sky.mydemo.MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.SkyTvBoxDemo.NoActionBar" />
+    </application>
+
+</manifest>
