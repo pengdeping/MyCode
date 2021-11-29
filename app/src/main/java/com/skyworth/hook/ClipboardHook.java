@@ -3,7 +3,6 @@ package com.skyworth.hook;
 import android.content.ClipData;
 import android.content.Context;
 import android.os.IBinder;
-import android.os.ServiceManager;
 import android.util.Log;
 
 import java.lang.reflect.InvocationHandler;
