@@ -48,10 +48,10 @@ public class Client extends BaseActivity implements View.OnClickListener{
                 try {
                     binderPoolManager = IBinderPoolManager.Stub.asInterface(service);
                     binderPoolManager.asBinder().linkToDeath(deathRecipient, 0);
-//                    weatherManager = IWeatherManager.Stub.asInterface(
-//                            binderPoolManager.queryBinder(BinderPoolManager.CODE_WEATHER));
-//                    computerManager = IComputerManager.Stub.asInterface(
-//                            binderPoolManager.queryBinder(BinderPoolManager.CODE_COMPUTER));
+                    weatherManager = IWeatherManager.Stub.asInterface(
+                            binderPoolManager.queryBinder(BinderPoolService.CODE_WEATHER));
+                    computerManager = IComputerManager.Stub.asInterface(
+                            binderPoolManager.queryBinder(BinderPoolService.CODE_COMPUTER));
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
