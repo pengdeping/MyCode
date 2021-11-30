@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +16,7 @@ import com.skyworth.aidl.BaseActivity;
 import com.skyworth.myapp.R;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author zzp(zhao_zepeng@hotmail.com)
@@ -22,12 +24,15 @@ import java.util.List;
  */
 public class Client extends BaseActivity implements View.OnClickListener{
 
+    private static final String TAG = "Client";
     private ServiceConnection serviceConnection = null;
     private IBinder.DeathRecipient deathRecipient = null;
     private IBinderPoolManager binderPoolManager;
     private IWeatherManager weatherManager;
     private IComputerManager computerManager;
     private TextView tv_content;
+
+    private CountDownLatch mDownLatch ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +48,14 @@ public class Client extends BaseActivity implements View.OnClickListener{
                 try {
                     binderPoolManager = IBinderPoolManager.Stub.asInterface(service);
                     binderPoolManager.asBinder().linkToDeath(deathRecipient, 0);
-                    weatherManager = IWeatherManager.Stub.asInterface(
-                            binderPoolManager.queryCode(BinderPoolService.CODE_WEATHER));
-                    computerManager = IComputerManager.Stub.asInterface(
-                            binderPoolManager.queryCode(BinderPoolService.CODE_COMPUTER));
+//                    weatherManager = IWeatherManager.Stub.asInterface(
+//                            binderPoolManager.queryBinder(BinderPoolManager.CODE_WEATHER));
+//                    computerManager = IComputerManager.Stub.asInterface(
+//                            binderPoolManager.queryBinder(BinderPoolManager.CODE_COMPUTER));
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
+                mDownLatch.countDown();
             }
 
             @Override
@@ -73,8 +79,16 @@ public class Client extends BaseActivity implements View.OnClickListener{
     }
 
     private void bindServer(){
+        mDownLatch = new CountDownLatch(1);
         Intent intent = new Intent(this, BinderPoolService.class);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        try {
+            mDownLatch.await();//2.准备:所有线程准备
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Log.e(TAG, "bind Pool Service！");
     }
 
     @Override

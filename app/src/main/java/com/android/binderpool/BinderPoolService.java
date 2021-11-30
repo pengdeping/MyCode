@@ -15,9 +15,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @since 2015-12-17
  */
 public class BinderPoolService extends Service{
-    public static final int CODE_WEATHER = 1;
-    public static final int CODE_COMPUTER = 2;
-
     private IBinderPoolManager iBinderPoolManager;
 
     //支持并发读写的list
@@ -40,43 +37,24 @@ public class BinderPoolService extends Service{
 
         weathers.add(nanshan);
         weathers.add(futian);
-        iBinderPoolManager = new IBinderPoolManager.Stub(){
-            @Override
-            public IBinder queryCode(int code) throws RemoteException {
-                switch (code){
-                    case CODE_WEATHER:
-                        return new IWeatherManager.Stub(){
-
-                            @Override
-                            public List<Weather> getWeather() throws RemoteException {
-                                return weathers;
-                            }
-
-                            @Override
-                            public void addWeather(Weather weather) throws RemoteException {
-                                weathers.add(weather);
-                            }
-                        };
-                    case CODE_COMPUTER:
-                        return new IComputerManager.Stub() {
-                            @Override
-                            public double computeAverageTemperature(List<Weather> weathers) throws RemoteException {
-                                double sum = 0;
-                                for (int i=0; i<weathers.size(); i++){
-                                    sum += weathers.get(i).temperature;
-                                }
-                                return sum/weathers.size();
-                            }
-                        };
-                    default:
-                        return null;
-                }
-            }
-        };
+        iBinderPoolManager = new BinderPoolManager(this);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
         return iBinderPoolManager.asBinder();
+    }
+
+    //获取Binder
+    public IBinder queryBinder(int binderCode){
+        IBinder binder = null;
+        try {
+            if (null != iBinderPoolManager){
+                binder = iBinderPoolManager.queryBinder(binderCode);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return binder;
     }
 }
